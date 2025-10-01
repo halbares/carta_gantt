@@ -316,90 +316,77 @@ button:hover {
   }
 }
 
+.project-title {
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 6px;
+  transition: background-color 0.3s;
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.project-title:hover {
+  background-color: #efefef;
+}
+
+.title-input {
+  font-size: 2em; /* Corresponds to h1 */
+  font-weight: bold;
+  color: #2c3e50;
+  width: 100%;
+  text-align: center;
+  border: 1px solid #3498db;
+  border-radius: 6px;
+  padding: 5px 10px;
+  margin-bottom: 25px;
+  box-sizing: border-box;
+}
+
+.pdf-button {
+  background-color: #9b59b6; /* Purple */
+  margin-left: 15px;
+}
+
+.pdf-button:hover {
+  background-color: #8e44ad;
+}
+
 @media print {
   @page {
     size: A4 landscape;
-    margin: 20mm;
+    margin: 15mm;
   }
 
   body {
     background-color: #fff !important;
     color: #000 !important;
-    font-size: 10pt;
+    font-size: 9pt;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
 
+  /* Ocultar elementos no deseados */
   .no-print {
     display: none !important;
   }
 
-  header {
-    text-align: left;
-    border-bottom: 2px solid #ccc;
-    padding-bottom: 10px;
-    margin-bottom: 20px;
-  }
-
-  header h1 {
-    font-size: 18pt;
-  }
-
-  header p {
-    font-size: 11pt;
-  }
-
-  .main-content {
-    display: block !important;
-  }
-
-  .task-list-container, .chart-section {
-    display: block !important;
-    width: 100% !important;
-    box-shadow: none !important;
-    border: 1px solid #ccc;
-    border-radius: 0 !important;
-    margin-bottom: 20px;
-    padding: 15px;
-    page-break-inside: avoid;
-  }
-
-  .task-list-container {
-    display: none;
-  }
-
-  .task-list-container:has(li:not(:empty)) {
-      display: block !important;
-  }
-
-  #task-list .task-actions {
-    display: none;
-  }
-
-  #task-list .task-name {
-    cursor: default;
-  }
-  #task-list .task-name:hover {
-    background-color: transparent;
-  }
-
-  .chart-section {
-    border: none;
+  /* Resetear padding de la app para la impresión */
+  .App {
     padding: 0;
   }
 
-  .chart-header {
-    display: none;
+  h1, h2 {
+    margin-top: 0;
+    padding-top: 0;
+    border: none;
+    text-align: center;
   }
 
-  #chart_div {
+  /* Forzar que el gráfico use todo el ancho */
+  #chart_div, #chart_div svg {
     width: 100% !important;
     height: auto !important;
     page-break-inside: avoid;
-  }
-
-  #chart_div svg {
-    width: 100% !important;
   }
 }
 
@@ -432,22 +419,43 @@ button:hover {
   align-items: flex-end;
 }
 
-.add-task-form input {
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1 1 150px; /* Flex properties for responsive wrapping */
+}
+
+.form-group label {
+  font-size: 0.9em;
+  font-weight: 500;
+  color: #5f6368;
+}
+
+/* Give more space to task name and dependencies */
+.add-task-form .form-group:has(input[name="name"]),
+.add-task-form .form-group:has(select[name="dependencies"]) {
+  flex-grow: 2;
+}
+
+.add-task-form input,
+.add-task-form select {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 1em;
   font-family: inherit;
+  width: 100%; /* Make inputs fill the group */
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
 }
 
-.add-task-form input[type="text"] {
-  flex: 2; /* Take more space */
-  min-width: 200px;
+.add-task-form select {
+    height: 42px;
 }
 
-.add-task-form input[type="date"] {
-  flex: 1;
-  min-width: 150px;
+.add-task-form select[multiple] {
+  height: auto;
+  padding: 5px;
 }
 
 .add-task-form button {
@@ -558,13 +566,55 @@ button:hover {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  align-items: center;
+  align-items: flex-end;
   padding: 10px 5px;
+  width: 100%;
 }
 
-.edit-form input {
+.edit-form .form-group {
+  flex: 1 1 120px;
+}
+
+.edit-form input,
+.edit-form select {
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 0.9em;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.edit-form select {
+    height: 34px;
+}
+
+.edit-form select[multiple] {
+  height: 60px; /* Adjust height for edit form */
+}
+
+/* --- Task List Customizations --- */
+.category-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 10px;
+  flex-shrink: 0; /* Prevent dot from shrinking */
+}
+
+.task-details-expanded {
+  padding: 15px 5px 5px 5px;
+  margin-top: 10px;
+  border-top: 1px dashed #ccc;
+}
+
+.task-details-expanded p {
+  margin: 0 0 8px 0;
+  color: #5f6368;
+}
+
+.task-details-expanded .task-actions {
+  padding-top: 10px;
+  margin-top: 10px;
+  border-top: 1px solid #e0e0e0;
 }
