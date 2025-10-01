@@ -12,14 +12,30 @@ const generateColorFromString = (str) => {
   return `hsl(${h}, 70%, 80%)`; // Pastel colors
 };
 
+// --- Default Data ---
+const defaultTasks = [
+  { id: '1', name: 'Fase de Investigación', start: '2025-10-01', end: '2025-10-10', progress: 50, dependencies: null, responsible: 'Ana', category: 'Planificación' },
+  { id: '2', name: 'Diseño de UI/UX', start: '2025-10-11', end: '2025-10-20', progress: 20, dependencies: '1', responsible: 'Pablo', category: 'Diseño' },
+  { id: '3', name: 'Desarrollo del Frontend', start: '2025-10-21', end: '2025-11-10', progress: 0, dependencies: '2', responsible: 'Carlos', category: 'Desarrollo' },
+];
+
 const App = () => {
-  // --- ESTADOS PRINCIPALES ---
-  const [projectTitle, setProjectTitle] = useState('Proyecto Carta Gantt');
-  const [tasks, setTasks] = useState([
-    { id: '1', name: 'Fase de Investigación', start: '2025-10-01', end: '2025-10-10', progress: 50, dependencies: null, responsible: 'Ana', category: 'Planificación' },
-    { id: '2', name: 'Diseño de UI/UX', start: '2025-10-11', end: '2025-10-20', progress: 20, dependencies: '1', responsible: 'Pablo', category: 'Diseño' },
-    { id: '3', name: 'Desarrollo del Frontend', start: '2025-10-21', end: '2025-11-10', progress: 0, dependencies: '2', responsible: 'Carlos', category: 'Desarrollo' },
-  ]);
+  // --- ESTADOS PRINCIPALES (con carga desde localStorage) ---
+  const [projectTitle, setProjectTitle] = useState(() => {
+    const savedTitle = localStorage.getItem('gantt-title');
+    return savedTitle || 'Mi Proyecto (Haz clic para editar)';
+  });
+
+  const [tasks, setTasks] = useState(() => {
+    const savedTasks = localStorage.getItem('gantt-tasks');
+    try {
+      return savedTasks ? JSON.parse(savedTasks) : defaultTasks;
+    } catch (e) {
+      console.error("Failed to parse tasks from localStorage", e);
+      return defaultTasks;
+    }
+  });
+
   const [totalDuration, setTotalDuration] = useState(0);
   const [categoryColors, setCategoryColors] = useState({});
 
@@ -29,7 +45,15 @@ const App = () => {
   const [editingTask, setEditingTask] = useState(null);
   const [expandedTaskId, setExpandedTaskId] = useState(null);
 
-  // --- SINCRONIZACIÓN DE COLORES DE CATEGORÍA ---
+  // --- EFECTOS SECUNDARIOS (Hooks) ---
+
+  // Guardado automático en localStorage
+  useEffect(() => {
+    localStorage.setItem('gantt-title', projectTitle);
+    localStorage.setItem('gantt-tasks', JSON.stringify(tasks));
+  }, [projectTitle, tasks]);
+
+  // Sincronización de colores de categoría
   useEffect(() => {
     const newCategoryColors = { ...categoryColors };
     let needsUpdate = false;
@@ -43,6 +67,22 @@ const App = () => {
       setCategoryColors(newCategoryColors);
     }
   }, [tasks, categoryColors]);
+
+  // Cálculo de la duración total del proyecto
+  useEffect(() => {
+    if (tasks.length > 0) {
+      const startDates = tasks.map(t => new Date(t.start).getTime());
+      const endDates = tasks.map(t => new Date(t.end).getTime());
+      const minStart = Math.min(...startDates);
+      const maxEnd = Math.max(...endDates);
+      const durationInMs = maxEnd - minStart;
+      const durationInDays = Math.ceil(durationInMs / (1000 * 60 * 60 * 24)) + 1;
+      setTotalDuration(durationInDays);
+    } else {
+      setTotalDuration(0);
+    }
+  }, [tasks]);
+
 
   // --- MANEJADORES DE EVENTOS ---
 
@@ -136,21 +176,7 @@ const App = () => {
     setExpandedTaskId(prev => (prev === taskId ? null : taskId));
   };
 
-  // --- LÓGICA DEL GRÁFICO Y CÁLCULOS ---
-  useEffect(() => {
-    if (tasks.length > 0) {
-      const startDates = tasks.map(t => new Date(t.start).getTime());
-      const endDates = tasks.map(t => new Date(t.end).getTime());
-      const minStart = Math.min(...startDates);
-      const maxEnd = Math.max(...endDates);
-      const durationInMs = maxEnd - minStart;
-      const durationInDays = Math.ceil(durationInMs / (1000 * 60 * 60 * 24)) + 1;
-      setTotalDuration(durationInDays);
-    } else {
-      setTotalDuration(0);
-    }
-  }, [tasks]);
-
+  // --- CONFIGURACIÓN DEL GRÁFICO ---
   const chartColumns = [
     { type: 'string', label: 'Task ID' },
     { type: 'string', label: 'Task Name' },
