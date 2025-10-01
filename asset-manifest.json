@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/carta_gantt/static/css/main.735167bb.css",
-    "main.js": "/carta_gantt/static/js/main.b4e67e27.js",
+    "main.css": "/carta_gantt/static/css/main.d3c21569.css",
+    "main.js": "/carta_gantt/static/js/main.c896773a.js",
     "index.html": "/carta_gantt/index.html",
-    "main.735167bb.css.map": "/carta_gantt/static/css/main.735167bb.css.map",
-    "main.b4e67e27.js.map": "/carta_gantt/static/js/main.b4e67e27.js.map"
+    "main.d3c21569.css.map": "/carta_gantt/static/css/main.d3c21569.css.map",
+    "main.c896773a.js.map": "/carta_gantt/static/js/main.c896773a.js.map"
   },
   "entrypoints": [
-    "static/css/main.735167bb.css",
-    "static/js/main.b4e67e27.js"
+    "static/css/main.d3c21569.css",
+    "static/js/main.c896773a.js"
   ]
 }
